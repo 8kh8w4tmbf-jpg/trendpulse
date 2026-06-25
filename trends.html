@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TrendPulse – Aktuelle Trends</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0D1B2A;
+      --surface:  #1E2D3D;
+      --surface2: #243547;
+      --cyan:     #00D4FF;
+      --cyan-dim: rgba(0,212,255,.12);
+      --text:     #F0EDE8;
+      --muted:    #8A9BB0;
+      --border:   rgba(0,212,255,.18);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── TICKER ── */
+    .ticker-wrap {
+      background: var(--cyan);
+      color: #0D1B2A;
+      overflow: hidden;
+      height: 32px;
+      display: flex;
+      align-items: center;
+    }
+    .ticker-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: .72rem;
+      letter-spacing: .12em;
+      padding: 0 18px;
+      white-space: nowrap;
+      background: #0D1B2A;
+      color: var(--cyan);
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+    .ticker-track {
+      display: flex;
+      gap: 56px;
+      animation: ticker 28s linear infinite;
+      white-space: nowrap;
+      font-size: .78rem;
+      font-weight: 500;
+      padding-left: 32px;
+    }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* ── HEADER ── */
+    header {
+      padding: 36px 48px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -.03em;
+    }
+    .logo span { color: var(--cyan); }
+    .tagline {
+      font-size: .8rem;
+      color: var(--muted);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .header-meta {
+      font-size: .78rem;
+      color: var(--muted);
+      text-align: right;
+    }
+    #live-clock { color: var(--cyan); font-weight: 600; }
+
+    /* ── CONTROLS ── */
+    .controls {
+      padding: 28px 48px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+    .search-box {
+      flex: 1;
+      min-width: 220px;
+      max-width: 420px;
+      display: flex;
+      gap: 0;
+    }
+    .search-box input {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-right: none;
+      color: var(--text);
+      padding: 10px 16px;
+      font-family: 'Inter', sans-serif;
+      font-size: .88rem;
+      border-radius: 8px 0 0 8px;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .search-box input:focus { border-color: var(--cyan); }
+    .search-box button {
+      background: var(--cyan);
+      color: #0D1B2A;
+      border: none;
+      padding: 10px 18px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: .85rem;
+      cursor: pointer;
+      border-radius: 0 8px 8px 0;
+      transition: opacity .2s;
+    }
+    .search-box button:hover { opacity: .85; }
+
+    .cats {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .cat-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 7px 16px;
+      border-radius: 20px;
+      font-size: .8rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .cat-btn:hover, .cat-btn.active {
+      background: var(--cyan-dim);
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    /* ── GRID ── */
+    .grid-wrap {
+      padding: 0 48px 64px;
+    }
+    .section-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .7rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+      transition: transform .25s, box-shadow .25s, border-color .25s;
+      cursor: default;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 12px;
+      background: radial-gradient(ellipse at top left, rgba(0,212,255,.07), transparent 70%);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,212,255,.12); border-color: rgba(0,212,255,.4); }
+    .card:hover::before { opacity: 1; }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .cat-tag {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .68rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      background: var(--cyan-dim);
+      padding: 3px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(0,212,255,.25);
+      white-space: nowrap;
+    }
+    .heat {
+      font-size: .72rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .heat-bar {
+      display: flex;
+      gap: 2px;
+    }
+    .heat-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--surface2);
+    }
+    .heat-dot.on { background: var(--cyan); }
+
+    .card h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      line-height: 1.35;
+      letter-spacing: -.01em;
+    }
+    .card p {
+      font-size: .83rem;
+      color: var(--muted);
+      line-height: 1.6;
+      flex: 1;
+    }
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: .72rem;
+      color: var(--muted);
+      padding-top: 10px;
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
+
+    /* ── LOADING / EMPTY ── */
+    .state-msg {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 64px 0;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 2px solid var(--border);
+      border-top-color: var(--cyan);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin: 0 auto 14px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      header, .controls, .grid-wrap { padding-left: 20px; padding-right: 20px; }
+      .logo { font-size: 1.5rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .ticker-track, .spinner { animation: none; }
+      .card { transition: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-label">LIVE</div>
+  <div class="ticker-track" id="ticker">
+    <span>KI verändert den Arbeitsmarkt &bull;</span>
+    <span>Erneuerbare Energien auf Rekordhoch &bull;</span>
+    <span>Neue Social-Media-Trends 2026 &bull;</span>
+    <span>Gesundheits-Apps boomen &bull;</span>
+    <span>Blockchain trifft Alltag &bull;</span>
+    <span>Raumfahrt-Rennen 2026 &bull;</span>
+    <span>KI verändert den Arbeitsmarkt &bull;</span>
+    <span>Erneuerbare Energien auf Rekordhoch &bull;</span>
+    <span>Neue Social-Media-Trends 2026 &bull;</span>
+    <span>Gesundheits-Apps boomen &bull;</span>
+    <span>Blockchain trifft Alltag &bull;</span>
+    <span>Raumfahrt-Rennen 2026 &bull;</span>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div>
+    <div class="logo">Trend<span>Pulse</span></div>
+    <div class="tagline">Aktuelle Trends · KI-gestützt · täglich aktualisiert</div>
+  </div>
+  <div class="header-meta">
+    <div id="live-clock"></div>
+    <div>25. Juni 2026</div>
+  </div>
+</header>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <div class="search-box">
+    <input id="search-input" type="text" placeholder="Trend suchen, z. B. »KI« oder »Klima«…" />
+    <button id="search-btn">Suchen</button>
+  </div>
+  <div class="cats">
+    <button class="cat-btn active" data-cat="Alle">Alle</button>
+    <button class="cat-btn" data-cat="Technologie">Technologie</button>
+    <button class="cat-btn" data-cat="Gesundheit">Gesundheit</button>
+    <button class="cat-btn" data-cat="Klima">Klima</button>
+    <button class="cat-btn" data-cat="Wirtschaft">Wirtschaft</button>
+    <button class="cat-btn" data-cat="Gesellschaft">Gesellschaft</button>
+  </div>
+</div>
+
+<!-- GRID -->
+<div class="grid-wrap">
+  <div class="section-label" id="grid-label">Trending jetzt</div>
+  <div class="grid" id="grid">
+    <div class="state-msg">
+      <div class="spinner"></div>
+      Trends werden geladen…
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ── Clock ── */
+  const clockEl = document.getElementById('live-clock');
+  const updateClock = () => {
+    clockEl.textContent = new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  };
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  /* ── State ── */
+  let currentCat = 'Alle';
+  let cards = [];
+
+  /* ── Categories config ── */
+  const CATS = ['Alle','Technologie','Gesundheit','Klima','Wirtschaft','Gesellschaft'];
+
+  /* ── Heat dots ── */
+  function heatDots(n) {
+    return `<div class="heat-bar">${[1,2,3,4,5].map(i=>`<div class="heat-dot ${i<=n?'on':''}"></div>`).join('')}</div>`;
+  }
+
+  /* ── Render cards ── */
+  function renderCards(data) {
+    const grid = document.getElementById('grid');
+    if (!data || data.length === 0) {
+      grid.innerHTML = `<div class="state-msg">Keine Trends gefunden. Versuche eine andere Suche.</div>`;
+      return;
+    }
+    cards = data;
+    grid.innerHTML = data.map(c => `
+      <div class="card">
+        <div class="card-top">
+          <span class="cat-tag">${c.category}</span>
+          <div class="heat">${heatDots(c.heat)}</div>
+        </div>
+        <h3>${c.title}</h3>
+        <p>${c.summary}</p>
+        <div class="card-footer">
+          <span>${c.source}</span>
+          <span>${c.timeAgo}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  /* ── Loading state ── */
+  function setLoading(msg = 'Trends werden geladen…') {
+    document.getElementById('grid').innerHTML = `
+      <div class="state-msg">
+        <div class="spinner"></div>
+        ${msg}
+      </div>`;
+  }
+
+  /* ── Call Claude API ── */
+  async function fetchTrends(query, category) {
+    const catFilter = category && category !== 'Alle' ? `Fokus ausschließlich auf die Kategorie: ${category}.` : '';
+    const topic = query || 'die wichtigsten globalen Trends vom Juni 2026';
+
+    const prompt = `Du bist ein Trend-Redakteur. Generiere 8 aktuelle, realistische Trend-Karten zu folgendem Thema: "${topic}". ${catFilter}
+
+Antworte NUR mit einem JSON-Array ohne Markdown-Backticks. Jedes Objekt hat diese Felder:
+- title: prägnante Überschrift (max 70 Zeichen)
+- summary: kurze Beschreibung des Trends (2–3 Sätze, sachlich, deutsch)
+- category: eine von [Technologie, Gesundheit, Klima, Wirtschaft, Gesellschaft]
+- heat: Popularitätswert 1–5
+- source: kurze Quellenangabe (z. B. "Reuters", "Statista", "MIT Review")
+- timeAgo: wann der Trend aufkam (z. B. "vor 2 Stunden", "heute Früh", "diese Woche")
+
+Wichtig: Nur das JSON-Array zurückgeben, keine Erklärungen.`;
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await response.json();
+    const raw = data.content.map(b => b.text || '').join('');
+    const clean = raw.replace(/```json|```/g, '').trim();
+    return JSON.parse(clean);
+  }
+
+  /* ── Load initial trends ── */
+  async function loadTrends(query = '', category = 'Alle') {
+    setLoading(query ? `Suche nach „${query}"…` : 'Aktuelle Trends werden geladen…');
+    document.getElementById('grid-label').textContent = query ? `Ergebnisse für „${query}"` : 'Trending jetzt';
+    try {
+      const data = await fetchTrends(query, category);
+      renderCards(data);
+    } catch (e) {
+      document.getElementById('grid').innerHTML = `<div class="state-msg">Fehler beim Laden der Trends. Bitte versuche es erneut.</div>`;
+    }
+  }
+
+  /* ── Category buttons ── */
+  document.querySelectorAll('.cat-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentCat = btn.dataset.cat;
+      loadTrends(document.getElementById('search-input').value.trim(), currentCat);
+    });
+  });
+
+  /* ── Search ── */
+  document.getElementById('search-btn').addEventListener('click', () => {
+    const q = document.getElementById('search-input').value.trim();
+    loadTrends(q, currentCat);
+  });
+  document.getElementById('search-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('search-btn').click();
+  });
+
+  /* ── Init ── */
+  loadTrends();
+</script>
+</body>
+</html>
